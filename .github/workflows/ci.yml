@@ -9,6 +9,8 @@ jobs:
         with:
           node-version: '22'   # LTS
           cache: 'pnpm'
-      - run: corepack enable
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 8 # or specify your preferred pnpm version, e.g., 10.12.4
       - run: pnpm install
-      - run: pnpm test --if-present 
+      - run: pnpm test --if-present
