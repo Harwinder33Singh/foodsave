@@ -19,7 +19,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4    # latest action
         with:
-          version: 8                  # or "latest"
+          version: '10.12.4'                 # or "latest"
           run_install: false          # we’ll run it ourselves later
 
       # 3. Set up Node *after* pnpm exists, turning on pnpm-cache
