@@ -1,16 +1,37 @@
 name: CI
-on: [push, pull_request]
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [22]      # LTS
+
     steps:
+      # 1. Check out code
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+
+      # 2. Install pnpm & set up its built-in cache dir
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4    # latest action
         with:
-          node-version: '22'   # LTS
-          cache: 'pnpm'
-      - uses: pnpm/action-setup@v4
+          version: 8                  # or "latest"
+          run_install: false          # we’ll run it ourselves later
+
+      # 3. Set up Node *after* pnpm exists, turning on pnpm-cache
+      - name: Use Node.js
+        uses: actions/setup-node@v4
         with:
-          version: 8 # or specify your preferred pnpm version, e.g., 10.12.4
-      - run: pnpm install
-      - run: pnpm test --if-present
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm                # now safe – pnpm is on PATH
+
+      # 4. Install deps & run tests
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        run: pnpm test --if-present
